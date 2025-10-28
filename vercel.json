@@ -1,0 +1,15 @@
+{
+  "builds": [
+    { "src": "api/main.py", "use": "@vercel/python" },
+    { "src": "api/database.py", "use": "@vercel/python" },
+    { "src": "api/setup_database.py", "use": "@vercel/python" },
+    { "src": "web/**/*", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "api/main.py" },
+    { "src": "/api/(.*)", "dest": "api/database.py" },
+    { "src": "/api/(.*)", "dest": "api/setup_database.py" },
+    { "src": "/(.*)", "dest": "web/$1" },
+    { "src": "/", "dest": "web/login.html" }
+  ]
+}
