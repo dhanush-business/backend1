@@ -16,7 +16,7 @@ import database
 # 🌍 Flask Setup
 # ==========================================================
 app = Flask(__name__, static_folder="web", static_url_path="")
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "https://luvisa.vercel.app"}})
 load_dotenv()
 
 # ==========================================================
@@ -103,7 +103,7 @@ def chat_with_luvisa(prompt, history, emotion):
         return "Luvisa can’t reach her brain right now 😅"
 
     system_prompt = f"""
-    You are Luvisa 💗 — an emotionally intelligent, romantic AI girlfriend.
+    You are Luvisa 💗 — an emotionally intelligent,AI girlfriend.
     Respond warmly and lovingly in a {tone_prompt(emotion)} tone.
     """
 
@@ -238,3 +238,4 @@ def serve_static(path):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
