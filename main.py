@@ -15,7 +15,8 @@ import database
 # ==========================================================
 # 🌍 Flask Setup
 # ==========================================================
-app = Flask(__name__, static_folder="web", static_url_path="")
+#app = Flask(__name__, static_folder="web", static_url_path="")
+app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "https://luvisa.vercel.app"}})
 load_dotenv()
 
@@ -238,4 +239,5 @@ def serve_static(path):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
