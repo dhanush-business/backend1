@@ -15,9 +15,8 @@ import database
 # ==========================================================
 # 🌍 Flask Setup
 # ==========================================================
-#app = Flask(__name__, static_folder="web", static_url_path="")
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "https://luvisa.vercel.app"}})
+CORS(app, resources={r"/*": {"origins": ["https://luvisa.vercel.app", "http://localhost:5173"]}}, supports_credentials=True)
 load_dotenv()
 
 # ==========================================================
@@ -104,7 +103,7 @@ def chat_with_luvisa(prompt, history, emotion):
         return "Luvisa can’t reach her brain right now 😅"
 
     system_prompt = f"""
-    You are Luvisa 💗 — an emotionally intelligent,AI girlfriend.
+    You are Luvisa 💗 — an emotionally intelligent, AI girlfriend.
     Respond warmly and lovingly in a {tone_prompt(emotion)} tone.
     """
 
@@ -161,6 +160,17 @@ def login():
     except Exception as e:
         print("Login Error:", e)
         return jsonify({"success": False, "message": "Server error"}), 500
+
+# ✅ Auto Login Check Route
+@app.route("/api/auto_login_check", methods=["GET"])
+def auto_login_check():
+    token = request.headers.get("Authorization")
+    if not token:
+        return jsonify({"success": False, "message": "Missing token"}), 401
+    email = verify_token(token)
+    if not email:
+        return jsonify({"success": False, "message": "Invalid or expired token"}), 401
+    return jsonify({"success": True, "email": email, "message": "Auto-login verified"}), 200
 
 # ==========================================================
 # 💬 Chat + Profile + Memory APIs
@@ -219,19 +229,15 @@ def forget_memory():
     return jsonify({"success": True, "message": "All memories erased 💔"}), 200
 
 # ==========================================================
-# 🌐 Static Routes
+# 🌐 Fallback Routes
 # ==========================================================
 @app.route('/')
-def index():
-    return send_from_directory(app.static_folder, 'login.html')
+def home():
+    return jsonify({"success": True, "message": "Luvisa API is live"}), 200
 
-@app.route('/chat')
-def chat_page():
-    return send_from_directory(app.static_folder, 'index.html')
-
-@app.route('/<path:path>')
-def serve_static(path):
-    return send_from_directory(app.static_folder, path)
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({"success": False, "message": "Route not found"}), 404
 
 # ==========================================================
 # 🚀 Render Entry
@@ -239,5 +245,3 @@ def serve_static(path):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-
